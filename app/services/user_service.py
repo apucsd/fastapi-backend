@@ -14,3 +14,21 @@ class UserService:
         self.db.commit()
         self.db.refresh(user)
         return user 
+    def get_user_by_id(self, user_id):
+        return self.db.query(User).filter(User.id == user_id).first()
+
+    def get_user_by_email(self, email):
+        return self.db.query(User).filter(User.email == email).first()
+    
+    def update_user(self, user_id, updated_user):
+        existing = self.get_user_by_id(user_id)
+        if not existing:
+            return None
+        for key, value in updated_user.items():
+            setattr(existing, key, value) 
+        self.db.merge(existing)
+        self.db.commit()
+        return existing
+        
+        
+        

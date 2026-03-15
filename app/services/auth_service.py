@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from app.schemas.auth import RegisterRequest
+from app.schemas.auth import RegisterRequest, OtpRequest
 from app.services.user_service import UserService
 from app.models.user import User
 from app.core.security import hash_password
@@ -68,4 +68,19 @@ class AuthService:
             }
         }
 
+
+    async def verify_otp(self, otp_request: OtpRequest):
+        user = UserService(self.db).get_user_by_email(otp_request.email)
+        if not user:
+            raise HTTPException(status_code=404, detail="No user found with the provided email")
+        if user.otp != otp_request.otp:
+            raise HTTPException(status_code=401, detail="Your provided OTP is incorrect")
+        if user.otp_expiry < datetime.now(timezone.utc):
+            raise HTTPException(status_code=401, detail="Your OTP has expired. Please request a new OTP")
+        user.is_verified = True
+        user = UserService(self.db).update_user(user.id, user)
+        
+        return user
+        
+        
         

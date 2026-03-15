@@ -11,4 +11,8 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+class OtpRequest(BaseModel):
+    email: EmailStr
+    otp: str
+
 
