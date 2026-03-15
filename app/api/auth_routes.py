@@ -10,10 +10,10 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/register")
-def register_user(register_request: RegisterRequest, db: Session = Depends(get_db)):
+async def register_user(register_request: RegisterRequest, db: Session = Depends(get_db)):
     auth_service = AuthService(db)
-    new_user = auth_service.register(register_request)
+    new_user = await auth_service.register(register_request)
     return {"message": "User registered successfully", "user_id": new_user}
 @router.post("/login")
-def login_user(login_request: LoginRequest):
+async def login_user(login_request: LoginRequest):
     return {"message": "User logged in successfully"}
