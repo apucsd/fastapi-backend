@@ -15,5 +15,7 @@ async def register_user(register_request: RegisterRequest, db: Session = Depends
     new_user = await auth_service.register(register_request)
     return {"message": "User registered successfully", "user_id": new_user}
 @router.post("/login")
-async def login_user(login_request: LoginRequest):
-    return {"message": "User logged in successfully"}
+async def login_user(login_request: LoginRequest, db: Session = Depends(get_db)):
+    auth_service = AuthService(db)
+    user = await auth_service.login(login_request)
+    return user

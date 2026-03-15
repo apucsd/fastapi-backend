@@ -5,6 +5,8 @@ from app.models.user import User
 from app.core.security import hash_password
 from app.utils.otp import generate_otp
 from app.utils.email import send_email
+from fastapi import HTTPException
+from app.core.security import verify_password, create_access_token
 
 
 class AuthService:
@@ -32,5 +34,38 @@ class AuthService:
                 otp=otp,
             )
         return result
+    async def login(self, login_request):
+        user = self.db.query(User).filter(User.email == login_request.email).first()
+        
+        if not user:
+            raise HTTPException(status_code=404, detail="No user found with the provided email")
+        if not verify_password(login_request.password, user.password):
+            raise HTTPException(status_code=401, detail="Your provided password is incorrect")
+
+        if not user.is_verified:
+            raise HTTPException(status_code=401, detail="Your account is not verified. Please verify your account")
+
+        if user.status == "inactive":
+            raise HTTPException(status_code=401, detail="Your account is inactive. Please contact the administrator")
+        if user.status == "deleted":
+            raise HTTPException(status_code=401, detail="Your account is deleted. Please contact the administrator")
+        if user.status == "blocked":
+            raise HTTPException(status_code=401, detail="Your account is blocked. Please contact the administrator")
+
+        token = create_access_token(data={
+            "sub": str(user.id),  # "sub" (subject) is standard for the user's unique ID
+            "email": user.email,
+            "name": user.name
+        })
+        return {
+            "access_token": token,
+            "user": {
+                "id": user.id,
+                "role": user.role,
+                "name": user.name,
+                "email": user.email,
+                "status": user.status
+            }
+        }
 
         

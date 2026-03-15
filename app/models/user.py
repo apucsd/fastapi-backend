@@ -14,6 +14,11 @@ class UserStatus(enum.Enum):
     BLOCKED = "blocked"
 
 
+class UserRole(enum.Enum):
+    ADMIN = "admin"
+    SUPER_ADMIN = "super_admin"
+    USER = "user"
+
 class User(Base, TimestampMixin):
     __tablename__ = "users"
 
@@ -22,6 +27,11 @@ class User(Base, TimestampMixin):
     name = Column(String, nullable=False)
     password = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
+    role = Column(
+        Enum(UserRole, name="user_role"),
+        default=UserRole.USER,
+        nullable=False
+    )
 
 
     is_verified = Column(Boolean, default=False)
