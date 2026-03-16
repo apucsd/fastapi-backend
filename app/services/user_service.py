@@ -1,5 +1,7 @@
+from app.utils.exceptions import AppException
 from app.models.user import User
-from fastapi import HTTPException
+from app.utils.data import get_update_data
+
 class UserService:
     def __init__(self, db):
         self.db = db
@@ -7,7 +9,7 @@ class UserService:
     def create_user(self, user):
         existing =  self.db.query(User).filter(User.email == user.email).first()
         if existing:
-            raise HTTPException(status_code=400, detail="Email already registered")
+            raise AppException(status_code=400, message="Email already registered")
 
         
         self.db.add(user)
@@ -21,13 +23,19 @@ class UserService:
         return self.db.query(User).filter(User.email == email).first()
     
     def update_user(self, user_id, updated_user):
+        
         existing = self.get_user_by_id(user_id)
         if not existing:
-            return None
-        for key, value in updated_user.items():
-            setattr(existing, key, value) 
-        self.db.merge(existing)
+            raise AppException(status_code=404, message="User not found")
+            
+        update_data = get_update_data(updated_user)
+
+        for key, value in update_data.items():
+            if key != "id": 
+                setattr(existing, key, value) 
+            
         self.db.commit()
+        self.db.refresh(existing)
         return existing
         
         
