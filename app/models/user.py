@@ -8,16 +8,15 @@ from app.db.base import Base, TimestampMixin
 
 
 class UserStatus(enum.Enum):
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    DELETED = "deleted"
-    BLOCKED = "blocked"
-
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
+    DELETED = "DELETED"
+    BLOCKED = "BLOCKED"
 
 class UserRole(enum.Enum):
-    ADMIN = "admin"
-    SUPER_ADMIN = "super_admin"
-    USER = "user"
+    ADMIN = "ADMIN"
+    SUPER_ADMIN = "SUPER_ADMIN"
+    USER = "USER"
 
 class User(Base, TimestampMixin):
     __tablename__ = "users"
