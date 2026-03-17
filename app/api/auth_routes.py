@@ -1,12 +1,12 @@
 
 from fastapi import APIRouter, Depends
 from app.db.session import get_db
-from app.schemas.auth import RegisterRequest, LoginRequest, OtpRequest
+from app.schemas.auth import RegisterRequest, LoginRequest, OtpRequest, ChangePasswordRequest
 from sqlalchemy.orm import Session
 from app.services.auth_service import AuthService
 from app.schemas.response import api_response
-
-
+from app.models.user import User
+from app.utils.auth import get_current_user
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
@@ -33,3 +33,9 @@ async def resend_otp(otp_request: OtpRequest, db: Session = Depends(get_db)):
     auth_service = AuthService(db)
     user = await auth_service.resend_otp(otp_request)
     return api_response(status_code=200, success=True, message="OTP resent successfully", data=user)
+
+@router.patch('/change-password')
+async def change_password(current_user: User = Depends(get_current_user), change_password_request: ChangePasswordRequest = None, db: Session = Depends(get_db)):
+    auth_service = AuthService(db)
+    user = await auth_service.change_password(current_user, change_password_request)
+    return api_response(status_code=200, success=True, message="Password changed successfully", data=user)

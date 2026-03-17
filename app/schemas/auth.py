@@ -14,5 +14,7 @@ class LoginRequest(BaseModel):
 class OtpRequest(BaseModel):
     email: EmailStr
     otp: str
-
-
+    
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str

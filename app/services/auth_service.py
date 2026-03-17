@@ -1,6 +1,6 @@
 from app.utils.exceptions import AppException
 from datetime import datetime, timedelta, timezone
-from app.schemas.auth import RegisterRequest, OtpRequest
+from app.schemas.auth import RegisterRequest, OtpRequest, ChangePasswordRequest
 from app.services.user_service import UserService
 from app.models.user import User
 from app.core.security import hash_password
@@ -103,4 +103,18 @@ class AuthService:
             template_name="verify_otp_email.html",
             otp=otp,
         )
+        return user
+    
+    async def change_password(self, current_user: User, change_password_request: ChangePasswordRequest):
+        if not verify_password(change_password_request.old_password, current_user.password):
+            raise AppException(status_code=401, message="Your provided old password is incorrect")
+        
+        if change_password_request.new_password == change_password_request.old_password:
+            raise AppException(status_code=401, message="New password cannot be the same as the old password")
+        
+        
+        updated_user = {
+            "password": hash_password(change_password_request.new_password)
+        }
+        user = UserService(self.db).update_user(current_user.id, updated_user)
         return user
