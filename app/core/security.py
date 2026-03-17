@@ -26,4 +26,4 @@ def decode_access_token(token: str):
         payload = jwt.decode(token, secret_key, algorithms=[algorithm])
         return payload
     except JWTError:
-        return None
+        raise JWTError("Invalid or expired token")

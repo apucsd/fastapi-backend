@@ -37,6 +37,7 @@ class UserService:
         self.db.commit()
         self.db.refresh(existing)
         return existing
-        
-        
+    
+    def get_all_users(self):
+        return self.db.query(User).all()
         

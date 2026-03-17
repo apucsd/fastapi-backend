@@ -1,4 +1,3 @@
-# app/schemas/response.py
 from typing import Any
 from datetime import datetime, date
 from uuid import UUID

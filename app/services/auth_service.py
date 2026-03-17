@@ -51,11 +51,14 @@ class AuthService:
             raise AppException(status_code=401, message="Your account is deleted. Please contact the administrator")
         if user.status == "blocked":
             raise AppException(status_code=401, message="Your account is blocked. Please contact the administrator")
+        
+        print(user)
 
         token = create_access_token(data={
-            "sub": str(user.id),  # "sub" (subject) is standard for the user's unique ID
+            "sub": str(user.id),
             "email": user.email,
-            "name": user.name
+            "name": user.name,
+            "role": user.role.value
         })
         return {
             "access_token": token,
