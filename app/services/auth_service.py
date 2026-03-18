@@ -243,7 +243,7 @@ class AuthService:
         
         # Check if token was issued more than 2 minutes ago (prevents reuse)
         exp = payload.get("exp")
-        if exp and (exp - datetime.now(timezone.utc).timestamp()) > 120:  # More than 2 minutes left
+        if exp and (exp - datetime.now(timezone.utc).timestamp()) > 120: 
             raise AppException(status_code=401, message="Token has expired for security reasons")
         
         updated_user ={
