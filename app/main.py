@@ -5,13 +5,11 @@ from app.db.session import engine
 from app.api.router import api_router
 from app.db.base import Base
 from rich.traceback import install
+
 install(show_locals=True)
 
 
-app = FastAPI(
-    title="FastAPI Backend",
-    version="1.0.0"
-)
+app = FastAPI(title="FastAPI Backend", version="1.0.0")
 
 # CREATE DATABASE TABLES
 Base.metadata.create_all(bind=engine)
@@ -32,8 +30,8 @@ async def app_exception_handler(request: Request, exc: AppException):
             "success": False,
             "statusCode": exc.status_code,
             "message": exc.message,
-            "data": None
-        }
+            "data": None,
+        },
     )
 
 
@@ -47,7 +45,7 @@ async def not_found_handler(request: Request, full_path: str):
             "message": "API NOT FOUND!",
             "error": {
                 "path": request.url.path,
-                "message": "Your requested path is not found!"
-            }
-        }
+                "message": "Your requested path is not found!",
+            },
+        },
     )

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify Your Account</title>
+    <title>Reset Your Password</title>
   </head>
   <body
     style="
@@ -49,7 +49,7 @@
             font-weight: 600;
           "
         >
-          Verify your sign-up
+          Reset your password
         </h2>
 
         <p
@@ -60,18 +60,18 @@
             margin-bottom: 32px;
           "
         >
-          We're excited to have you here! First, you need to confirm your
-          account. It's as simple as entering the code below in the app.
+          We received a request to reset your password. No problem! You can use
+          the code below to reset it.
         </p>
 
         <!-- OTP Code -->
         <div
           style="
-            background-color: #f8f9fa;
+            background-color: #fff3cd;
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 32px;
-            border: 1px solid #e9ecef;
+            border: 1px solid #ffc107;
           "
         >
           <div
@@ -79,11 +79,49 @@
               font-size: 32px;
               font-weight: 600;
               letter-spacing: 8px;
-              color: #1a1a1a;
+              color: #856404;
             "
           >
             {{ otp }}
           </div>
+        </div>
+
+        <!-- Instructions -->
+        <div
+          style="
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+            text-align: left;
+            border: 1px solid #e9ecef;
+          "
+        >
+          <h4
+            style="
+              color: #495057;
+              margin-bottom: 12px;
+              font-size: 16px;
+              font-weight: 600;
+            "
+          >
+            How to reset:
+          </h4>
+          <ol
+            style="
+              color: #6c757d;
+              font-size: 14px;
+              line-height: 1.6;
+              margin: 0;
+              padding-left: 20px;
+            "
+          >
+            <li style="margin-bottom: 8px">
+              Enter this code in the password reset form
+            </li>
+            <li style="margin-bottom: 8px">Create your new password</li>
+            <li>Confirm your new password and submit</li>
+          </ol>
         </div>
 
         <!-- Expiry Info -->
@@ -95,8 +133,9 @@
             margin-bottom: 40px;
           "
         >
-          This code is <strong>active for 10 minutes</strong>. <br />
-          If you didn't request to sign up, you can safely ignore this email.
+          This code is <strong>active for 5 minutes</strong>. <br />
+          If you didn't request to reset your password, you can safely ignore
+          this email.
         </p>
 
         <!-- Footer -->

@@ -2,6 +2,7 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from app.core.config import secret_key, algorithm, access_token_expire_minutes
+from app.utils.exceptions import AppException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -21,9 +22,16 @@ def create_access_token(data: dict):
     return jwt.encode(to_encode, secret_key, algorithm=algorithm)
 
 
+def create_verification_token(data: dict, expires_minutes: int = 5):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, secret_key, algorithm=algorithm)
+
+
 def decode_access_token(token: str):
     try:
         payload = jwt.decode(token, secret_key, algorithms=[algorithm])
         return payload
     except JWTError:
-        raise JWTError("Invalid or expired token")
+        raise AppException(status_code=401, message="Invalid or expired token")

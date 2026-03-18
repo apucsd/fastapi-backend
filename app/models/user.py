@@ -1,4 +1,3 @@
-
 from sqlalchemy import Column, String, Enum, Boolean, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -13,10 +12,12 @@ class UserStatus(enum.Enum):
     DELETED = "DELETED"
     BLOCKED = "BLOCKED"
 
+
 class UserRole(enum.Enum):
     ADMIN = "ADMIN"
     SUPER_ADMIN = "SUPER_ADMIN"
     USER = "USER"
+
 
 class User(Base, TimestampMixin):
     __tablename__ = "users"
@@ -27,21 +28,15 @@ class User(Base, TimestampMixin):
     password = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
     role = Column(
-        Enum(UserRole, name="user_role"),
-        default=UserRole.USER,
-        nullable=False
+        Enum(UserRole, name="user_role"), default=UserRole.USER, nullable=False
     )
-
 
     is_verified = Column(Boolean, default=False)
     is_agreed_to_terms = Column(Boolean, default=True)
 
     status = Column(
-        Enum(UserStatus, name="user_status"),
-        default=UserStatus.ACTIVE,
-        nullable=False
+        Enum(UserStatus, name="user_status"), default=UserStatus.ACTIVE, nullable=False
     )
 
     otp = Column(String, nullable=True)
     otp_expiry = Column(DateTime(timezone=True), nullable=True)
- 

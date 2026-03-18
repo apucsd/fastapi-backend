@@ -7,6 +7,7 @@ import enum
 
 EXCLUDE_FIELDS = {"password", "otp", "otp_expiry"}
 
+
 class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (datetime, date)):
@@ -16,6 +17,7 @@ class CustomEncoder(json.JSONEncoder):
         if isinstance(obj, enum.Enum):
             return obj.value
         return super().default(obj)
+
 
 def serialize(data: Any) -> Any:
     if isinstance(data, list):
@@ -36,12 +38,13 @@ def serialize(data: Any) -> Any:
         }
     return data
 
+
 def api_response(
     status_code: int = 200,
     success: bool = True,
     message: str = "No message from server",
     meta: Any = None,
-    data: Any = None
+    data: Any = None,
 ):
     content = {
         "status_code": status_code,
@@ -56,5 +59,5 @@ def api_response(
 
     return JSONResponse(
         status_code=status_code,
-        content=json.loads(json.dumps(content, cls=CustomEncoder))
+        content=json.loads(json.dumps(content, cls=CustomEncoder)),
     )
