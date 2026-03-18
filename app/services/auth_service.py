@@ -26,8 +26,9 @@ from app.utils.email import send_email
 class AuthService:
     def __init__(self, db):
         self.db = db
+        self.user_service = UserService(db)
 
-    async def register(self, user: RegisterRequest):
+    async def register_user(self, user: RegisterRequest):
         otp = generate_otp()
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=5)
 
@@ -38,8 +39,9 @@ class AuthService:
             otp=otp,
             otp_expiry=expires_at,
         )
-        result = UserService(self.db).create_user(new_user)
+        result = self.user_service.create_user(new_user)
         if result:
+            user = self.user_service.get_user_by_email(user.email)
             await send_email(
                 to=user.email,
                 subject="Welcome! Here is your OTP",
@@ -48,7 +50,7 @@ class AuthService:
             )
         return result
 
-    async def login(self, login_request):
+    async def authenticate_user(self, login_request):
         user = self.db.query(User).filter(User.email == login_request.email).first()
 
         if not user:
@@ -101,8 +103,8 @@ class AuthService:
             "email": user.email,
         }
 
-    async def verify_otp(self, otp_request: OtpRequest):
-        user = UserService(self.db).get_user_by_email(otp_request.email)
+    async def verify_user_email(self, otp_request: OtpRequest):
+        user = self.user_service.get_user_by_email(otp_request.email)
         if not user:
             raise AppException(
                 status_code=404, message="No user found with the provided email"
@@ -117,14 +119,14 @@ class AuthService:
                 message="Your OTP has expired. Please request a new OTP",
             )
 
-        user = UserService(self.db).update_user(
+        user = self.user_service.update_user(
             user.id, {"otp": None, "otp_expiry": None}
         )
 
         return user
 
-    async def resend_otp(self, otp_request: OtpRequest):
-        user = UserService(self.db).get_user_by_email(otp_request.email)
+    async def resend_user_verification_otp(self, otp_request: OtpRequest):
+        user = self.user_service.get_user_by_email(otp_request.email)
         if not user:
             raise AppException(
                 status_code=404, message="No user found with the provided email"
@@ -137,7 +139,7 @@ class AuthService:
         otp = generate_otp()
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=5)
         update_data = {"otp": otp, "otp_expiry": expires_at}
-        user = UserService(self.db).update_user(user.id, update_data)
+        user = self.user_service.update_user(user.id, update_data)
         await send_email(
             to=user.email,
             subject=f"Hey {user.name}! Here is your resend OTP",
@@ -146,7 +148,7 @@ class AuthService:
         )
         return user
 
-    async def change_password(
+    async def update_user_password(
         self, current_user: User, change_password_request: ChangePasswordRequest
     ):
 
@@ -164,20 +166,18 @@ class AuthService:
             )
 
         updated_user = {"password": hash_password(change_password_request.new_password)}
-        user = UserService(self.db).update_user(current_user.id, updated_user)
+        user = self.user_service.update_user(current_user.id, updated_user)
         return user
 
-    async def forgot_password(self, forgot_password_request: ForgotPasswordRequest):
+    async def initiate_password_reset(self, forgot_password_request: ForgotPasswordRequest):
 
-        user_service = UserService(self.db)
-
-        user = user_service.get_user_by_email(forgot_password_request.email)
+        user = self.user_service.get_user_by_email(forgot_password_request.email)
         if not user:
             raise AppException(status_code=404, message="No user found with this email")
         otp = generate_otp()
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=5)
 
-        result = user_service.update_user(
+        result = self.user_service.update_user(
             user.id, {"otp": otp, "otp_expiry": expires_at}
         )
         if result:
@@ -188,7 +188,7 @@ class AuthService:
                 otp=otp,
             )
 
-    async def verify_reset_otp(self, verify_reset_otp_request: ResetPasswordOTPRequest):
+    async def verify_reset_password_otp(self, verify_reset_otp_request: ResetPasswordOTPRequest):
         user_service = UserService(self.db)
         user = user_service.get_user_by_email(verify_reset_otp_request.email)
         if not user:
@@ -228,13 +228,12 @@ class AuthService:
             data={"sub": str(user.id), "email": user.email, "type": "password_reset"},
             expires_minutes=5
         )
-        user_service.update_user(user.id, {"otp": None, "otp_expiry": None})
+        self.user_service.update_user(user.id, {"otp": None, "otp_expiry": None})
 
         return reset_token
 
 
-    async def reset_password(self, reset_password_request: ResetPasswordRequest):
-        user_service = UserService(self.db)
+    async def reset_user_password_with_token(self, reset_password_request: ResetPasswordRequest):
 
         payload = decode_access_token(reset_password_request.token)
         user_id = payload.get("sub")
@@ -250,7 +249,7 @@ class AuthService:
             "password": hash_password(reset_password_request.new_password)
         }
 
-        result = user_service.update_user(user_id, updated_user)
+        result = self.user_service.update_user(user_id, updated_user)
 
         return result
 
