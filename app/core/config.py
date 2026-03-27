@@ -15,3 +15,11 @@ smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
 smtp_port = int(os.getenv("SMTP_PORT", 587))
 smtp_user = os.getenv("SMTP_USER")
 smtp_password = os.getenv("SMTP_PASSWORD")
+
+
+# Cloudinary
+cloudinary_cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME")
+cloudinary_api_key = os.getenv("CLOUDINARY_API_KEY")
+cloudinary_api_secret = os.getenv("CLOUDINARY_API_SECRET")
+
+
