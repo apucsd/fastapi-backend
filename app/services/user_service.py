@@ -1,6 +1,7 @@
 from app.utils.exceptions import AppException
 from app.models.user import User
 from app.utils.data import get_update_data
+from app.utils.query_builder import QueryBuilder
 
 
 class UserService:
@@ -39,5 +40,9 @@ class UserService:
         self.db.refresh(existing)
         return existing
 
-    def get_all_users(self):
-        return self.db.query(User).all()
+    def get_all_users(self, query_params: dict):
+        base_query = self.db.query(User)
+        
+        builder = QueryBuilder(User, base_query, query_params)
+        result = builder.search(["name", "email"]).filter().sort().paginate().fields(['id', 'name', 'email']).execute(self.db)
+        return result

@@ -1,6 +1,6 @@
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi import Depends
-from jose import JWTError, jwt
+from jose import JWTError
 from app.db.session import get_db
 from sqlalchemy.orm import Session
 from app.core.security import decode_access_token
@@ -15,9 +15,12 @@ def get_current_user(
     db: Session = Depends(get_db),
 ):
 
-
+    if not credentials:
+        raise AppException(status_code=401, message="Please provide a valid token")
+    
     token = credentials.credentials
     try:
+
         payload = decode_access_token(token)
 
         user_id = payload.get("sub")
