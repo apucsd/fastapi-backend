@@ -1,2 +1,3 @@
 venv/
 /app/generated/prisma
+.env
