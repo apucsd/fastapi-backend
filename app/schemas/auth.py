@@ -1,20 +1,21 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class RegisterRequest(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
+    name: str = Field(default="Apu Sutradhar")
+    email: EmailStr = Field(default="apusutradhar77@gmail.com")
+    password: str = Field(default="password123")
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str
+    email: EmailStr = Field(default="apusutradhar77@gmail.com")
+    password: str = Field(default="password123")
+
 
 
 class OtpRequest(BaseModel):
-    email: EmailStr
-    otp: str
+    email: EmailStr = Field(default="apusutradhar77@gmail.com")
+    otp: str = Field(default="123456")
 
 
 class ChangePasswordRequest(BaseModel):

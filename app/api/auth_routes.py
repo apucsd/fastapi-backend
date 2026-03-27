@@ -1,3 +1,4 @@
+from sqlalchemy import null
 from fastapi import APIRouter, Depends
 from app.db.session import get_db
 from app.schemas.auth import (
@@ -23,7 +24,7 @@ async def register_user(
     register_request: RegisterRequest, db: Session = Depends(get_db)
 ):
     auth_service = AuthService(db)
-    new_user = await auth_service.register(register_request)
+    new_user = await auth_service.register_user(register_request)
     return api_response(
         status_code=201,
         success=True,
@@ -53,9 +54,9 @@ async def verify_otp(otp_request: OtpRequest, db: Session = Depends(get_db)):
 @router.post("/resend-otp")
 async def resend_otp(otp_request: OtpRequest, db: Session = Depends(get_db)):
     auth_service = AuthService(db)
-    result = await auth_service.resend_user_verification_otp(otp_request)
+    await auth_service.resend_user_verification_otp(otp_request)
     return api_response(
-        status_code=200, success=True, message="OTP resent successfully", data=result
+        status_code=200, success=True, message="OTP resent successfully", data=null
     )
 
 

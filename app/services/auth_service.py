@@ -1,5 +1,3 @@
-from re import A
-from app.services import user_service
 from app.utils.exceptions import AppException
 from datetime import datetime, timedelta, timezone
 from app.schemas.auth import (
@@ -120,7 +118,7 @@ class AuthService:
             )
 
         user = self.user_service.update_user(
-            user.id, {"otp": None, "otp_expiry": None}
+            user.id, {"otp": None, "otp_expiry": None, "is_verified": True}
         )
 
         return user
@@ -189,8 +187,7 @@ class AuthService:
             )
 
     async def verify_reset_password_otp(self, verify_reset_otp_request: ResetPasswordOTPRequest):
-        user_service = UserService(self.db)
-        user = user_service.get_user_by_email(verify_reset_otp_request.email)
+        user = self.user_service.get_user_by_email(verify_reset_otp_request.email)
         if not user:
             raise AppException(status_code=404, message="No user found with this email")
         if not user.is_verified:
@@ -226,7 +223,7 @@ class AuthService:
 
         reset_token = create_verification_token(
             data={"sub": str(user.id), "email": user.email, "type": "password_reset"},
-            expires_minutes=5
+            expires_minutes=2
         )
         self.user_service.update_user(user.id, {"otp": None, "otp_expiry": None})
 
@@ -240,9 +237,9 @@ class AuthService:
         if not user_id:
             raise AppException(status_code= 404, message="User not found")
         
-        # Check if token was issued more than 2 minutes ago (prevents reuse)
+        # Standard expiration check (JWT decoder already does this, but keeping it simple)
         exp = payload.get("exp")
-        if exp and (exp - datetime.now(timezone.utc).timestamp()) > 120: 
+        if exp and exp < datetime.now(timezone.utc).timestamp(): 
             raise AppException(status_code=401, message="Token has expired for security reasons")
         
         updated_user ={
