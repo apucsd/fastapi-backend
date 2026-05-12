@@ -1,3 +1,7 @@
-venv/
+.venv/
 /app/generated/prisma
 .env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
