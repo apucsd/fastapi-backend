@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Enum, Boolean, DateTime
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 import enum
@@ -40,3 +41,6 @@ class User(Base, TimestampMixin):
 
     otp = Column(String, nullable=True)
     otp_expiry = Column(DateTime(timezone=True), nullable=True)
+
+    # SQLAlchemy relationship
+    resume = relationship("Resume", back_populates="user", uselist=False, cascade="all, delete-orphan")

@@ -83,7 +83,7 @@ class AuthService:
                 message="Your account is blocked. Please contact the administrator",
             )
 
-        print(user)
+        # print(user)
 
         token = create_access_token(
             data={

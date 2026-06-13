@@ -9,7 +9,12 @@ from rich.traceback import install
 install(show_locals=True)
 
 
-app = FastAPI(title="FastAPI Backend", version="1.0.0")
+app = FastAPI(
+    title="FastAPI Backend", 
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
 
 # CREATE DATABASE TABLES
 Base.metadata.create_all(bind=engine)
