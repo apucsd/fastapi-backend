@@ -40,6 +40,7 @@ pydantic==2.12.5
 pydantic-settings==2.13.1
 pydantic_core==2.41.5
 Pygments==2.19.2
+PyMuPDF==1.27.2.3
 python-dotenv==1.0.0
 python-jose==3.3.0
 python-multipart==0.0.22
