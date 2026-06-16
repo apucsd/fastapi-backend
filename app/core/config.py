@@ -23,3 +23,8 @@ cloudinary_api_key = os.getenv("CLOUDINARY_API_KEY")
 cloudinary_api_secret = os.getenv("CLOUDINARY_API_SECRET")
 
 
+# OpenAI
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
+
+
