@@ -5,7 +5,6 @@ from app.core.config import openai_api_key
 from app.utils.exceptions import AppException
 
 MODELS = [
-    "qwen/qwen3.6-plus:free",
     "openai/gpt-oss-20b:free",
     "nvidia/nemotron-3-nano-30b-a3b:free",
     "google/gemma-3-4b-it:free",

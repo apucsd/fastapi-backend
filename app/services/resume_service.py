@@ -69,7 +69,7 @@ class ResumeService:
         try:
             print(f"Starting AI extraction for resume ID: {resume_id}")
             extracted_data = await self.ai_service.extract_resume_data(raw_text)
-            print(f"AI extraction successful: {extracted_data}")
+            print(f"AI extraction successful")
             
             resume = self.db.query(Resume).filter(Resume.id == resume_id).first()
             if resume:
