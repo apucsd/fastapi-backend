@@ -28,3 +28,16 @@ async def upload_resume(
         message="Resume uploaded successfully!", 
         data={"resume_id": str(saved_resume.id), "file_url": saved_resume.file_url}
     )
+@router.get('/me')
+async def get_resume(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    resume_service = ResumeService(db)
+    resume = resume_service.get_resume_by_user_id(current_user.id)
+    return api_response(
+        status_code=200, 
+        success=True, 
+        message="Resume data retrieved successfully!", 
+        data={"resume_id": str(resume.id), "file_url": resume.file_url}
+    )

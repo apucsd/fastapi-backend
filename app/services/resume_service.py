@@ -100,3 +100,8 @@ class ResumeService:
             
         except Exception as e:
             raise AppException(status_code=500, message=f'Failed to extract text from PDF: {str(e)}')
+        
+
+    def get_resume_by_user_id(self, user_id: str) -> Resume:
+        return self.db.query(Resume).filter(Resume.user_id == user_id).first()
+        
