@@ -39,3 +39,8 @@ class ResumeCreate(ResumeBase):
         } 
     }
 
+
+class ResumeUpdate(ResumeBase):
+    """Schema for updating resume data without uploading a new file."""
+    pass
+

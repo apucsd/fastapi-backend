@@ -104,4 +104,38 @@ class ResumeService:
 
     def get_resume_by_user_id(self, user_id: str) -> Resume:
         return self.db.query(Resume).filter(Resume.user_id == user_id).first()
+    
+    def update_resume(self, user_id: str, update_data: dict) -> Resume:
+        resume = self.db.query(Resume).filter(Resume.user_id == user_id).first()
+        if not resume:
+            raise AppException(
+                status_code=404,
+                message="Resume not found. Please upload your resume first."
+            )
+        
+        # Only update fields that are provided
+        for field, value in update_data.items():
+            if value is not None and hasattr(resume, field):
+                setattr(resume, field, value)
+        
+        self.db.commit()
+        self.db.refresh(resume)
+        return resume
+    
+    def update_resume(self, user_id: str, update_data: dict) -> Resume:
+        resume = self.db.query(Resume).filter(Resume.user_id == user_id).first()
+        if not resume:
+            raise AppException(
+                status_code=404,
+                message="Resume not found. Please upload your resume first."
+            )
+        
+        # Only update fields that are provided
+        for field, value in update_data.items():
+            if value is not None and hasattr(resume, field):
+                setattr(resume, field, value)
+        
+        self.db.commit()
+        self.db.refresh(resume)
+        return resume
         
