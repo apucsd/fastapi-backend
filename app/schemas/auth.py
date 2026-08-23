@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -35,3 +38,33 @@ class ResetPasswordOTPRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str
+
+
+
+
+
+# ---Response Schemas ---#
+class UserResponse(BaseModel):
+    id: UUID
+    name: str
+    email: EmailStr
+    role: str
+    is_verified: bool = False
+    status: str
+    image_url: Optional[str] = None
+
+    created_at: Optional[datetime]= None
+    updated_at: Optional[datetime]= None
+    
+    class Config:
+        from_attributes = True
+        
+    
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+class ResetTokenResponse(BaseModel):
+    reset_token: str
+    message: str = "Use this token to reset your password"

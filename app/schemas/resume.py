@@ -1,6 +1,8 @@
 from uuid import UUID
 from typing import List, Optional, Dict, Any
+from datetime import datetime
 from pydantic import BaseModel, Field
+
 
 class ResumeBase(BaseModel):
     file_url: Optional[str] = Field(None, description="Url of the resume")
@@ -40,7 +42,18 @@ class ResumeCreate(ResumeBase):
     }
 
 
+class ResumeResponse(ResumeBase):
+    id: UUID
+    user_id: UUID
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class ResumeUpdate(ResumeBase):
     """Schema for updating resume data without uploading a new file."""
     pass
+
 

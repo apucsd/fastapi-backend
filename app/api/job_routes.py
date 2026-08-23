@@ -1,143 +1,116 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from typing import List
+from fastapi import APIRouter, Depends, status
 
-from app.db.session import get_db
 from app.models.user import User
+from app.schemas.job import (
+    CoverLetterResponse,
+    JobResponse,
+    JobStatusResponse,
+    JobStatusUpdate,
+    JobSummaryResponse,
+)
+from app.schemas.response import ApiResponse
+from app.services.job_service import JobService, get_job_service
 from app.utils.auth import get_current_user
-from app.services.job_service import JobService
-from app.schemas.job import JobStatusUpdate
-from app.schemas.response import api_response
+from app.utils.exceptions import AppException
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
 
-@router.post('/discover')
+@router.post(
+    "/discover",
+    response_model=ApiResponse[List[JobSummaryResponse]],
+    status_code=status.HTTP_201_CREATED,
+)
 async def discover_jobs(
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    job_service: JobService = Depends(get_job_service),
 ):
-    job_service = JobService(db)
     saved_jobs = await job_service.discover_jobs_for_user(user_id=current_user.id)
-
-    return api_response(
-        status_code=201,
-        success=True,
+    return ApiResponse(
+        status_code=status.HTTP_201_CREATED,
         message=f"Discovered and scored {len(saved_jobs)} new jobs!",
-        data=[
-            {
-                "id": str(j.id),
-                "title": j.title,
-                "company": j.company,
-                "match_score": j.match_score,
-            }
-            for j in saved_jobs
-        ],
+        data=saved_jobs,
     )
 
 
-@router.get('/matched')
-async def get_matched_jobs(
+@router.get(
+    "/matched",
+    response_model=ApiResponse[List[JobResponse]],
+    status_code=status.HTTP_200_OK,
+)
+def get_matched_jobs(
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    job_service: JobService = Depends(get_job_service),
 ):
-    job_service = JobService(db)
     jobs = job_service.get_matched_jobs(user_id=current_user.id)
-
-    return api_response(
-        status_code=200,
-        success=True,
+    return ApiResponse(
+        status_code=status.HTTP_200_OK,
         message="Matched jobs retrieved successfully!",
-        data=[
-            {
-                "id": str(j.id),
-                "title": j.title,
-                "company": j.company,
-                "location": j.location,
-                "url": j.url,
-                "match_score": j.match_score,
-                "matching_skills": j.matching_skills,
-                "missing_skills": j.missing_skills,
-                "status": j.status.value,
-            }
-            for j in jobs
-        ],
+        data=jobs,
     )
 
 
-@router.get('/{job_id}')
-async def get_job_detail(
+@router.get(
+    "/{job_id}",
+    response_model=ApiResponse[JobResponse],
+    status_code=status.HTTP_200_OK,
+)
+def get_job_detail(
     job_id: str,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    job_service: JobService = Depends(get_job_service),
 ):
-    job_service = JobService(db)
     job = job_service.get_job_by_id(job_id=job_id, user_id=current_user.id)
-
-    return api_response(
-        status_code=200,
-        success=True,
+    return ApiResponse(
+        status_code=status.HTTP_200_OK,
         message="Job details retrieved!",
-        data={
-            "id": str(job.id),
-            "title": job.title,
-            "company": job.company,
-            "location": job.location,
-            "description": job.description,
-            "url": job.url,
-            "source": job.source,
-            "match_score": job.match_score,
-            "matching_skills": job.matching_skills,
-            "missing_skills": job.missing_skills,
-            "status": job.status.value,
-            "created_at": str(job.created_at),
-        },
+        data=job,
     )
 
 
-@router.patch('/{job_id}/status')
-async def update_job_status(
+@router.patch(
+    "/{job_id}/status",
+    response_model=ApiResponse[JobStatusResponse],
+    status_code=status.HTTP_200_OK,
+)
+def update_job_status(
     job_id: str,
     body: JobStatusUpdate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    job_service: JobService = Depends(get_job_service),
 ):
-    job_service = JobService(db)
     updated_job = job_service.update_job_status(
         job_id=job_id,
         user_id=current_user.id,
         new_status=body.status,
     )
-
-    return api_response(
-        status_code=200,
-        success=True,
+    return ApiResponse(
+        status_code=status.HTTP_200_OK,
         message=f"Job status updated to {updated_job.status.value}!",
-        data={
-            "id": str(updated_job.id),
-            "title": updated_job.title,
-            "status": updated_job.status.value,
-        },
+        data=updated_job,
     )
 
 
-@router.post('/{job_id}/cover-letter')
+@router.post(
+    "/{job_id}/cover-letter",
+    response_model=ApiResponse[CoverLetterResponse],
+    status_code=status.HTTP_201_CREATED,
+)
 async def generate_cover_letter(
     job_id: str,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    job_service: JobService = Depends(get_job_service),
 ):
-    job_service = JobService(db)
     job = await job_service.generate_cover_letter_for_job(
         job_id=job_id,
         user_id=current_user.id,
     )
-
-    return api_response(
-        status_code=201,
-        success=True,
+    return ApiResponse(
+        status_code=status.HTTP_201_CREATED,
         message="Cover letter generated successfully!",
         data={
-            "job_id": str(job.id),
+            "job_id": job.id,
             "title": job.title,
             "company": job.company,
             "cover_letter": job.cover_letter,
@@ -145,31 +118,31 @@ async def generate_cover_letter(
     )
 
 
-@router.get('/{job_id}/cover-letter')
-async def get_cover_letter(
+@router.get(
+    "/{job_id}/cover-letter",
+    response_model=ApiResponse[CoverLetterResponse],
+    status_code=status.HTTP_200_OK,
+)
+def get_cover_letter(
     job_id: str,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    job_service: JobService = Depends(get_job_service),
 ):
-    job_service = JobService(db)
     job = job_service.get_job_by_id(job_id=job_id, user_id=current_user.id)
-
     if not job.cover_letter:
-        return api_response(
+        raise AppException(
             status_code=404,
-            success=False,
             message="No cover letter generated yet. Use POST to generate one.",
-            data=None,
         )
 
-    return api_response(
-        status_code=200,
-        success=True,
+    return ApiResponse(
+        status_code=status.HTTP_200_OK,
         message="Cover letter retrieved!",
         data={
-            "job_id": str(job.id),
+            "job_id": job.id,
             "title": job.title,
             "company": job.company,
             "cover_letter": job.cover_letter,
         },
     )
+

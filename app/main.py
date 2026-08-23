@@ -1,16 +1,17 @@
-from app.utils.exceptions import AppException
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from app.db.session import engine
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_redoc_html
+from fastapi.responses import HTMLResponse, JSONResponse
+from rich.traceback import install
+
 from app.api.router import api_router
 from app.db.base import Base
-from rich.traceback import install
+from app.db.session import engine
+from app.utils.exceptions import AppException
 
 install(show_locals=True)
 
-from fastapi.middleware.cors import CORSMiddleware
-
-app = FastAPI(title="FastAPI Backend", version="1.0.0")
+app = FastAPI(title="FastAPI Backend", version="1.0.0", redoc_url=None)
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,6 +35,15 @@ async def root():
     return {"message": "Welcome to the backend API!"}
 
 
+@app.get("/redoc", include_in_schema=False, response_class=HTMLResponse)
+async def redoc_html():
+    return get_redoc_html(
+        openapi_url=app.openapi_url,
+        title=f"{app.title} - ReDoc",
+        redoc_js_url="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js",
+    )
+
+
 @app.exception_handler(AppException)
 async def app_exception_handler(request: Request, exc: AppException):
     return JSONResponse(
@@ -47,7 +57,11 @@ async def app_exception_handler(request: Request, exc: AppException):
     )
 
 
-@app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
+@app.api_route(
+    "/{full_path:path}",
+    methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    include_in_schema=False,
+)
 async def not_found_handler(request: Request, full_path: str):
     return JSONResponse(
         status_code=404,
@@ -61,3 +75,5 @@ async def not_found_handler(request: Request, full_path: str):
             },
         },
     )
+
+

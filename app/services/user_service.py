@@ -1,7 +1,11 @@
+from fastapi import Depends
+from sqlalchemy.orm import Session
+from app.db.session import get_db
 from app.utils.exceptions import AppException
 from app.models.user import User
 from app.utils.data import get_update_data
 from app.utils.query_builder import QueryBuilder
+
 
 
 class UserService:
@@ -46,3 +50,8 @@ class UserService:
         builder = QueryBuilder(User, base_query, query_params)
         result = builder.search(["name", "email"]).filter().sort().paginate().fields(['id', 'name', 'email']).execute(self.db)
         return result
+
+
+def get_user_service(db: Session = Depends(get_db)) -> UserService:
+    return UserService(db)
+

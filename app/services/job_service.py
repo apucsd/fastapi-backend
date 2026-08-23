@@ -193,3 +193,12 @@ class JobService:
         self.db.refresh(job)
 
         return job
+
+
+from fastapi import Depends
+from app.db.session import get_db
+
+
+def get_job_service(db: Session = Depends(get_db)) -> JobService:
+    return JobService(db)
+
