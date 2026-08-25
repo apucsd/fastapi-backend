@@ -19,7 +19,6 @@ def list_users(
     query_params = dict(request.query_params)
     result = user_service.get_all_users(query_params)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Users retrieved successfully",
         data=result["data"],
         meta=result["meta"],
@@ -29,7 +28,6 @@ def list_users(
 @router.get("/profile", response_model=ApiResponse[UserResponse])
 def user_profile(current_user: User = Depends(get_current_user)):
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="User profile retrieved successfully",
         data=current_user,
     )

@@ -28,7 +28,6 @@ async def discover_jobs(
 ):
     saved_jobs = await job_service.discover_jobs_for_user(user_id=current_user.id)
     return ApiResponse(
-        status_code=status.HTTP_201_CREATED,
         message=f"Discovered and scored {len(saved_jobs)} new jobs!",
         data=saved_jobs,
     )
@@ -45,7 +44,6 @@ def get_matched_jobs(
 ):
     jobs = job_service.get_matched_jobs(user_id=current_user.id)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Matched jobs retrieved successfully!",
         data=jobs,
     )
@@ -63,7 +61,6 @@ def get_job_detail(
 ):
     job = job_service.get_job_by_id(job_id=job_id, user_id=current_user.id)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Job details retrieved!",
         data=job,
     )
@@ -86,7 +83,6 @@ def update_job_status(
         new_status=body.status,
     )
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message=f"Job status updated to {updated_job.status.value}!",
         data=updated_job,
     )
@@ -107,7 +103,6 @@ async def generate_cover_letter(
         user_id=current_user.id,
     )
     return ApiResponse(
-        status_code=status.HTTP_201_CREATED,
         message="Cover letter generated successfully!",
         data={
             "job_id": job.id,
@@ -136,7 +131,6 @@ def get_cover_letter(
         )
 
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Cover letter retrieved!",
         data={
             "job_id": job.id,

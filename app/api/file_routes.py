@@ -21,7 +21,6 @@ async def upload_file(file: UploadFile = File(...)):
         )
 
     return ApiResponse(
-        status_code=status.HTTP_201_CREATED,
         message="File uploaded successfully",
         data={"url": image_url},
     )
@@ -40,7 +39,6 @@ async def upload_multiple_files(files: List[UploadFile] = File(...)):
         )
 
     return ApiResponse(
-        status_code=status.HTTP_201_CREATED,
         message="Files uploaded successfully",
         data={"url": image_urls},
     )

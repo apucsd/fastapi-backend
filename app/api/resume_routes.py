@@ -24,7 +24,6 @@ async def upload_resume(
         user_id=current_user.id, file=file
     )
     return ApiResponse(
-        status_code=status.HTTP_201_CREATED,
         message="Resume uploaded successfully!",
         data=saved_resume,
     )
@@ -47,7 +46,6 @@ def get_resume(
         )
 
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Resume data retrieved successfully!",
         data=resume,
     )
@@ -68,7 +66,6 @@ def update_resume(
         update_data=body.model_dump(exclude_unset=True),
     )
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Resume updated successfully!",
         data=updated_resume,
     )

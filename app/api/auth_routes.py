@@ -31,7 +31,6 @@ async def register_user(
 ):
     new_user = await auth_service.register_user(register_request)
     return ApiResponse(
-        status_code=status.HTTP_201_CREATED,
         message="User registered successfully. Please check your email for the OTP.",
         data=new_user,
     )
@@ -48,11 +47,9 @@ async def login_user(
 ):
     result = await auth_service.authenticate_user(login_request)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="User logged in successfully",
         data=result,
     )
-
 
 
 @router.post(
@@ -66,7 +63,6 @@ def verify_otp(
 ):
     result = auth_service.verify_user_email(otp_request)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="User verified successfully",
         data=result,
     )
@@ -83,7 +79,6 @@ async def resend_otp(
 ):
     await auth_service.resend_user_verification_otp(otp_request)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="OTP resent successfully",
         data=None,
     )
@@ -103,7 +98,6 @@ def change_password(
         current_user, change_password_request
     )
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Password changed successfully",
         data=result,
     )
@@ -120,7 +114,6 @@ async def forgot_password(
 ):
     await auth_service.initiate_password_reset(forgot_password_request)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Password reset OTP has been sent to your email",
         data=None,
     )
@@ -137,7 +130,6 @@ def verify_reset_otp(
 ):
     result = auth_service.verify_reset_password_otp(reset_password_otp_request)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="OTP verified successfully",
         data=result,
     )
@@ -154,7 +146,6 @@ def reset_password(
 ):
     result = auth_service.reset_user_password_with_token(reset_password_request)
     return ApiResponse(
-        status_code=status.HTTP_200_OK,
         message="Your password has been reset successfully",
         data=result,
     )
