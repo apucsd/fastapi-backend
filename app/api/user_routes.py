@@ -10,14 +10,14 @@ from app.utils.auth import get_current_user, require_role
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.get("/", response_model=ApiResponse[List[dict[str, Any]]])
+@router.get("", response_model=ApiResponse[List[dict[str, Any]]])
 def list_users(
-    request: Request,
-    current_user: User = Depends(require_role("USER")),
+    page: int = 1,
+    limit:int =10,
+    search_term:str | None = None,
     user_service: UserService = Depends(get_user_service),
 ):
-    query_params = dict(request.query_params)
-    result = user_service.get_all_users(query_params)
+    result = user_service.get_all_users(page, limit, search_term)
     return ApiResponse(
         message="Users retrieved successfully",
         data=result["data"],

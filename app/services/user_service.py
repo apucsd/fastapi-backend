@@ -44,10 +44,16 @@ class UserService:
         self.db.refresh(existing)
         return existing
 
-    def get_all_users(self, query_params: dict):
+    def get_all_users(self, page: int, limit: int, search_term: str | None = None):
         base_query = self.db.query(User)
-        
-        builder = QueryBuilder(User, base_query, query_params)
+
+        params = {
+            "page": page,
+            "limit": limit,
+            "search_term": search_term,
+        }
+
+        builder = QueryBuilder(User, base_query, params)
         result = builder.search(["name", "email"]).filter().sort().paginate().fields(['id', 'name', 'email']).execute(self.db)
         return result
 
