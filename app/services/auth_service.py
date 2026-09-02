@@ -52,7 +52,7 @@ class AuthService:
                     otp=otp,
                 )
             except Exception as e:
-                print(f"⚠️ Email sending failed: {e}. [DEV OTP]: {otp}")
+                print(f" Email sending failed: {e}. [DEV OTP]: {otp}")
 
         return created_user
 
@@ -79,7 +79,7 @@ class AuthService:
                     otp=otp,
                 )
             except Exception as e:
-                print(f"⚠️ Email sending failed: {e}. [DEV OTP]: {otp}")
+                print(f"Email sending failed: {e}. [DEV OTP]: {otp}")
 
             raise AppException(
                 status_code=403,

@@ -39,7 +39,6 @@ async def register_user(
 @router.post(
     "/login",
     response_model=ApiResponse[TokenResponse],
-    status_code=status.HTTP_200_OK,
 )
 async def login_user(
     login_request: LoginRequest,
@@ -55,7 +54,6 @@ async def login_user(
 @router.post(
     "/verify-otp",
     response_model=ApiResponse[UserResponse],
-    status_code=status.HTTP_200_OK,
 )
 def verify_otp(
     otp_request: OtpRequest,
@@ -71,7 +69,6 @@ def verify_otp(
 @router.post(
     "/resend-otp",
     response_model=ApiResponse[None],
-    status_code=status.HTTP_200_OK,
 )
 async def resend_otp(
     otp_request: OtpRequest,
@@ -87,7 +84,6 @@ async def resend_otp(
 @router.patch(
     "/change-password",
     response_model=ApiResponse[UserResponse],
-    status_code=status.HTTP_200_OK,
 )
 def change_password(
     change_password_request: ChangePasswordRequest,
@@ -106,7 +102,6 @@ def change_password(
 @router.post(
     "/forgot-password",
     response_model=ApiResponse[None],
-    status_code=status.HTTP_200_OK,
 )
 async def forgot_password(
     forgot_password_request: ForgotPasswordRequest,
@@ -122,7 +117,6 @@ async def forgot_password(
 @router.post(
     "/verify-reset-otp",
     response_model=ApiResponse[ResetTokenResponse],
-    status_code=status.HTTP_200_OK,
 )
 def verify_reset_otp(
     reset_password_otp_request: ResetPasswordOTPRequest,
@@ -138,7 +132,6 @@ def verify_reset_otp(
 @router.post(
     "/reset-password",
     response_model=ApiResponse[UserResponse],
-    status_code=status.HTTP_200_OK,
 )
 def reset_password(
     reset_password_request: ResetPasswordRequest,
